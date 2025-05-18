@@ -1,0 +1,229 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QuickTube - Free YouTube Video Summarizer</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #f7f9fc, #e6f0ff);
+      margin: 0;
+      padding: 0;
+    }
+
+    header {
+      background-color: #4764e1;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    header h1 {
+      margin: 0;
+      font-size: 2em;
+    }
+
+    main {
+      padding: 40px 20px;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .intro {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .input-box {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    input[type="text"] {
+      width: 60%;
+      padding: 12px;
+      font-size: 16px;
+      border: 2px solid #ccc;
+      border-radius: 6px;
+    }
+
+    button {
+      background-color: #1f3bb3;
+      color: white;
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin-left: 10px;
+    }
+
+    button:hover {
+      background-color: #14349b;
+    }
+
+    .steps {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+    }
+
+    .step {
+      background: white;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+      padding: 20px;
+      width: 30%;
+      margin: 10px;
+      text-align: center;
+    }
+
+    .use-cases {
+      margin-top: 40px;
+    }
+
+    .roles {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+    }
+
+    .role {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      width: 30%;
+      margin: 10px;
+      text-align: center;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+    }
+
+    .role img {
+  width: 150px;
+  height: auto;
+  margin-bottom: 20px;
+  transition: transform 0.3s ease;
+}
+
+.role img:hover {
+  transform: scale(1.5);
+}
+
+.summary-output {
+      margin-top: 20px;
+      text-align: center;
+      font-weight: bold;
+    }
+
+    @media (max-width: 768px) {
+      .step, .role {
+        width: 100%;
+      }
+
+      input[type="text"] {
+        width: 90%;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>QuickTube Video Summarizer</h1>
+    <p>Summarize YouTube videos instantly with our free AI tool</p>
+  </header>
+
+  <main>
+    <div class="intro">
+      <h2>How to Summarize YouTube Videos</h2>
+    </div>
+
+    <div class="input-box">
+      <input type="text" id="videoURL" placeholder="https://www.youtube.com/watch?v=example" />
+      <button onclick="generateSummary()">Generate Summary</button>
+    </div>
+
+    <div class="summary-output" id="summary"></div>
+
+    <div class="steps">
+      <div class="step">
+        <h3>Step 1: Enter the URL</h3>
+        <p>Copy the YouTube video URL and paste it above.</p>
+      </div>
+      <div class="step">
+        <h3>Step 2: Click Generate</h3>
+        <p>Let our AI fetch and summarize the content.</p>
+      </div>
+      <div class="step">
+        <h3>Step 3: Read Summary</h3>
+        <p>Your summary appears instantly below the input field.</p>
+      </div>
+    </div>
+
+    <div class="use-cases">
+      <h2 style="text-align: center;">Use Cases for Different Roles</h2>
+      <div class="roles">
+        <div class="role">
+          <img src="https://static.vecteezy.com/system/resources/thumbnails/002/173/392/small/student-studying-at-home-free-vector.jpg" alt="Student">
+          <h4>For Students</h4>
+          <p>Quickly summarize lectures and tutorials to save time while studying.</p>
+        </div>
+        <div class="role">
+          <img src="https://static.vecteezy.com/system/resources/previews/010/872/211/non_2x/3d-professional-graphic-designer-png.png" alt="Professional">
+          <h4>For Professionals</h4>
+          <p>Extract key points from webinars, industry talks, and business content.</p>
+        </div>
+        <div class="role">
+          <img src="https://img.freepik.com/free-vector/research-paper-concept-illustration_114360-8312.jpg" alt="Researcher">
+          <h4>For Researchers</h4>
+          <p>Speed up your literature reviews by summarizing long research videos.</p>
+        </div>
+      </div>
+    </div>
+  </main>
+<footer style="background-color: #4764e1; color: white; text-align: center; padding: 20px; margin-top: 40px;">
+  &copy; 2025 QuickTube. All rights reserved.
+</footer>
+
+  <script>
+function generateSummary() {
+  const url = document.getElementById('videoURL').value.trim();
+  const summaryDiv = document.getElementById('summary');
+
+  // Regex to validate most YouTube URL formats
+  const youtubeRegex = /^(https?\:\/\/)?(www\.youtube\.com|youtu\.be)\/.+$/;
+
+  if (!youtubeRegex.test(url)) {
+    summaryDiv.innerText = "❌ Please enter a valid YouTube URL.";
+    return;
+  }
+
+  summaryDiv.innerText = "⏳ Generating summary...";
+
+  fetch("/api/summarize/", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ url: url }),
+  })
+    .then((response) => response.json())
+    .then((data) => {
+      if (data.summary) {
+        summaryDiv.innerText = "✅ " + data.summary;
+      } else {
+        summaryDiv.innerText = "❌ Error: " + (data.error || "Unknown error.");
+      }
+    })
+    .catch((error) => {
+      summaryDiv.innerText = "❌ Network Error: " + error.message;
+    });
+}
+</script>
+
+
+</body>
+</html>
